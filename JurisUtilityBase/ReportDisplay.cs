@@ -26,11 +26,7 @@ namespace JurisUtilityBase
 
         private void buttonPrint_Click(object sender, EventArgs e)
         {
-            PrinterDialog pd = new PrinterDialog();
-            pd.ShowDialog();
-            string printer = pd.printerName;
-            if (!string.IsNullOrEmpty(printer))
-            {
+
                 Cursor.Current = Cursors.WaitCursor;
 
                 Microsoft.Office.Interop.Excel.Application xlApp = new Microsoft.Office.Interop.Excel.Application();
@@ -76,25 +72,8 @@ namespace JurisUtilityBase
                 Microsoft.Office.Interop.Excel.Range usedrange = xlWorkSheet.UsedRange;
                 usedrange.Columns.AutoFit();
                 xlApp.Visible = false;
-                var _with1 = xlWorkSheet.PageSetup;
-                _with1.Zoom = false;
-                _with1.PrintGridlines = true;
-                _with1.PaperSize = Microsoft.Office.Interop.Excel.XlPaperSize.xlPaperA4;
-                _with1.Orientation = Microsoft.Office.Interop.Excel.XlPageOrientation.xlLandscape;
-                _with1.FitToPagesWide = 1;
-                _with1.FitToPagesTall = false;
 
-                _with1.PrintTitleRows = "$1:$" + dataGridView1.Columns.Count.ToString();
-
-                string Defprinter = null;
-                Defprinter = xlApp.ActivePrinter;
-                xlApp.ActivePrinter = printer;
-
-                // Print the range
-                usedrange.PrintOutEx(misValue, misValue, misValue, misValue,
-                misValue, misValue, misValue, misValue);
-                // }
-                xlApp.ActivePrinter = Defprinter;
+                xlWorkBook.SaveAs(@"c:\intel\tblcoa.xlsx");
 
                 // Cleanup:
                 GC.Collect();
@@ -109,7 +88,7 @@ namespace JurisUtilityBase
                 Marshal.FinalReleaseComObject(xlApp);
                 Cursor.Current = Cursors.Default;
             }
-        }
+        
 
 
 

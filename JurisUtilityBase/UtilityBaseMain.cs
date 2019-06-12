@@ -155,8 +155,6 @@ namespace JurisUtilityBase
             toolStripStatusLabel.Text = "Updating Chart of Accounts...";
             Cursor.Current = Cursors.WaitCursor;
             statusStrip.Refresh();
-            
-            
 
             //Update New Accounts and Accounts that will not have completely new data
 
@@ -282,52 +280,12 @@ namespace JurisUtilityBase
 
 
 
-            sql = "select e.EDDSysNbr ,e.EDDBatch ,e.EDDRecNbr ,e.EDDAccount ,e.EDDAmount , a.newsysnbr  from ExpDetailDist e inner join #tblcoa a on EDDAccount=oldsysnbr" +
-                " where a.statustype in (1,2,4) order by e.EDDBatch, e.EDDRecNbr, e.EDDAccount";
 
-            DataSet ds1 = _jurisUtility.RecordsetFromSQL(sql);
-            if (ds1.Tables[0].Rows.Count > 0)
-            {
-                foreach (DataRow row in ds1.Tables[0].Rows)
-                {
-                    sql = "select * from expdetaildist where EDDBatch = " + row["EDDBatch"].ToString() + " and EDDRecNbr = " + row["EDDRecNbr"].ToString() +
-                        " and EDDAccount = " + row["newsysnbr"].ToString();
+            sql = @"update  ExpDetailDist
+            set EDDAccount=newsysnbr from #tblcoa where EDDAccount=oldsysnbr
+             and statustype in (1,2,4)"; 
 
-
-                    DataSet inner = _jurisUtility.RecordsetFromSQL(sql);
-                    if (inner.Tables[0].Rows.Count > 0)
-                    {
-                        //match and we have to combine
-                        sql = "delete from expdetaildist where EDDSysNbr = " + row["EDDSysNbr"].ToString();
-                        _jurisUtility.ExecuteNonQueryCommand(0, sql);
-
-                        sql = "update expdetaildist set EDDAmount = " + row["EDDAmount"].ToString() + " + " + inner.Tables[0].Rows[0]["EDDAmount"].ToString() +
-                            "where EDDSysNbr = " + inner.Tables[0].Rows[0]["EDDSysNbr"].ToString();
-
-
-                    }
-                    else
-                    {
-                        sql = @"update  ExpDetailDist " +
-                            " set EDDAccount= " + row["newsysnbr"].ToString() + " where EDDSysNbr = " + row["EDDSysNbr"].ToString();
-
-                        _jurisUtility.ExecuteNonQueryCommand(0, sql);
-                    }
-
-
-                }
-
-
-            }
-
-            ds1.Clear();
-
-
-           // sql = @"update  ExpDetailDist
-           // set EDDAccount=newsysnbr from #tblcoa where EDDAccount=oldsysnbr
-           // and statustype in (1,2,4)";
-
-           // _jurisUtility.ExecuteNonQueryCommand(0, sql);
+            _jurisUtility.ExecuteNonQueryCommand(0, sql);
 
 
 
@@ -494,11 +452,19 @@ namespace JurisUtilityBase
 
             _jurisUtility.ExecuteNonQueryCommand(0, sql);
 
+            sql = "select * from expdetaildist inner join #tblcoa on EDDAccount=oldsysnbr order by eddbatch, EDDRecNbr";
+            DataSet dd = _jurisUtility.RecordsetFromSQL(sql);
+            var result = dd.Tables[0]
+                .AsEnumerable()
+                .Where(myRow => myRow.Field<int>("RowNo") == 1);
 
 
             sql = @"update  ExpDetailDist
-            set EDDAccount=case when newsysnbr=35 then 30 else newsysnbr end from #tblcoa where EDDAccount=oldsysnbr
+            set EDDAccount=newsysnbr from #tblcoa where EDDAccount=oldsysnbr
             and statustype in (3)";
+
+            //select min(ogaacct) from officeglaccount
+            //where ogatype=210 
 
             _jurisUtility.ExecuteNonQueryCommand(0, sql);
 

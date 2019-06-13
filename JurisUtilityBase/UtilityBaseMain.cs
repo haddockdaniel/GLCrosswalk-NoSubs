@@ -214,6 +214,30 @@ namespace JurisUtilityBase
 
             _jurisUtility.ExecuteNonQueryCommand(0, sql);
 
+
+             sql = @"update  ChartNote
+            set ChnAccount=newsysnbr from #tblcoa where ChnAccount=oldsysnbr
+             and statustype in (1,2,4)";
+
+            _jurisUtility.ExecuteNonQueryCommand(0, sql);
+
+            sql = @"update  VchTemplate
+            set VTVchDiscountAccount=newsysnbr from #tblcoa where VTVchDiscountAccount=oldsysnbr
+             and statustype in (1,2,4)";
+
+            _jurisUtility.ExecuteNonQueryCommand(0, sql);
+
+            sql = @"update  VchTemplateGLDist
+            set VTGLDAccount=newsysnbr from #tblcoa where VTGLDAccount=oldsysnbr
+             and statustype in (1,2,4)";
+
+             _jurisUtility.ExecuteNonQueryCommand(0, sql);
+
+
+
+
+
+
             UpdateStatus("Updating Chart of Accounts...", 4, 25);
             toolStripStatusLabel.Text = "Updating Chart of Accounts...";
             Cursor.Current = Cursors.WaitCursor;
@@ -248,6 +272,8 @@ namespace JurisUtilityBase
             sql = @"update  voucher
             set VchDiscAcct=newsysnbr from #tblcoa where VchDiscAcct=oldsysnbr
             and statustype in (1,2,4)";
+
+
 
             _jurisUtility.ExecuteNonQueryCommand(0, sql);
 
@@ -363,6 +389,24 @@ namespace JurisUtilityBase
 
             sql = @"update  voucherbatchgldist
             set VBGGLAcct=newsysnbr from #tblcoa where VBGGLAcct=oldsysnbr
+             and statustype in (3)";
+
+            _jurisUtility.ExecuteNonQueryCommand(0, sql);
+
+            sql = @"update  ChartNote
+            set ChnAccount=newsysnbr from #tblcoa where ChnAccount=oldsysnbr
+             and statustype in (3)";
+
+            _jurisUtility.ExecuteNonQueryCommand(0, sql);
+
+            sql = @"update  VchTemplate
+            set VTVchDiscountAccount=newsysnbr from #tblcoa where VTVchDiscountAccount=oldsysnbr
+             and statustype in (3)";
+
+            _jurisUtility.ExecuteNonQueryCommand(0, sql);
+
+            sql = @"update  VchTemplateGLDist
+            set VTGLDAccount=newsysnbr from #tblcoa where VTGLDAccount=oldsysnbr
              and statustype in (3)";
 
             _jurisUtility.ExecuteNonQueryCommand(0, sql);
@@ -569,6 +613,8 @@ namespace JurisUtilityBase
             UpdateStatus("Complete...", 25, 25);
 
             WriteLog("GL CROSSWALK CHART OF ACCOUNTS UPDATE " + DateTime.Now.ToString("MM/dd/yyyy"));
+
+            MessageBox.Show("The process completed successfully", "Finished", MessageBoxButtons.OK, MessageBoxIcon.None);
 
         }
         private bool VerifyFirmName()
